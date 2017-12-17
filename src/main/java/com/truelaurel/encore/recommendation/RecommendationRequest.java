@@ -1,4 +1,4 @@
-package com.truelaurel.encore;
+package com.truelaurel.encore.recommendation;
 
 public class RecommendationRequest {
     private int internalLinkCount;

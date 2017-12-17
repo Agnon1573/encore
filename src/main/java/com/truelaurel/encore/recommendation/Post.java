@@ -1,25 +1,29 @@
-package com.truelaurel.encore;
+package com.truelaurel.encore.recommendation;
 
 import java.util.Set;
 
 public class Post {
     private String url;
     private String title;
-    private String content;
+    private String timestamp;
     private Set<String> tags;
 
     public Post() {
     }
 
-    public Post(String url, String title, String content, Set<String> tags) {
+    public Post(String url, String title, String timestamp, Set<String> tags) {
         this.url = url;
         this.title = title;
-        this.content = content;
+        this.timestamp = timestamp;
         this.tags = tags;
     }
 
     public String getUrl() {
         return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getTitle() {
@@ -30,16 +34,12 @@ public class Post {
         this.title = title;
     }
 
-    public String getContent() {
-        return content;
+    public String getTimestamp() {
+        return timestamp;
     }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
     }
 
     public Set<String> getTags() {

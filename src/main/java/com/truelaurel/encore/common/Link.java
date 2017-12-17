@@ -1,4 +1,4 @@
-package com.truelaurel.encore;
+package com.truelaurel.encore.common;
 
 import java.util.Objects;
 

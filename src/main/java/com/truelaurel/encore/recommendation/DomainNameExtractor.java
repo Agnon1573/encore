@@ -1,4 +1,4 @@
-package com.truelaurel.encore;
+package com.truelaurel.encore.recommendation;
 
 import java.net.URI;
 import java.net.URISyntaxException;

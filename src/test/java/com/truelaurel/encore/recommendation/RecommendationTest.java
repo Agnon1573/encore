@@ -1,5 +1,6 @@
-package com.truelaurel.encore;
+package com.truelaurel.encore.recommendation;
 
+import com.truelaurel.encore.common.Link;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class RecommendationTest {
 
     @Test
     public void testWelcome() {
-        Post post = new Post("https://hui-wang.info/book.html", "读书", "many books", Collections.singleton("book"));
+        Post post = new Post("https://hui-wang.info/book.html", "读书", "2017", Collections.singleton("book"));
         RecommendationRequest request = new RecommendationRequest(1, 1, post);
         webClient.post().uri("/recommend").accept(MediaType.APPLICATION_JSON)
                 .body(Mono.just(request), RecommendationRequest.class)
