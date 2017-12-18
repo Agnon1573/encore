@@ -1,4 +1,4 @@
-package com.truelaurel.encore.recommendation;
+package com.truelaurel.encore.post;
 
 import org.springframework.data.annotation.Id;
 

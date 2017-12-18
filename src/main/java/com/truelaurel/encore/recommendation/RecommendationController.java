@@ -1,6 +1,7 @@
 package com.truelaurel.encore.recommendation;
 
 import com.truelaurel.encore.common.Link;
+import com.truelaurel.encore.post.Post;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,19 +11,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.truelaurel.encore.recommendation.DomainNameExtractor.*;
+import static com.truelaurel.encore.recommendation.DomainNameExtractor.domain;
 
 @RestController
 public class RecommendationController {
 
     private final Map<String, Set<Link>> tagToLinks = new HashMap<>();
 
-    private PostRepository postRepository;
-
-    public RecommendationController(final PostRepository postRepository) {
-        this.postRepository = postRepository;
-        Flux<Post> posts = postRepository.findAll();
-        posts.subscribe(this::updateTagIndex);
+    public RecommendationController() {
     }
 
     private void updateTagIndex(Post p) {
@@ -38,7 +34,6 @@ public class RecommendationController {
     @PostMapping("/recommend")
     public Flux<Link> recommend(@RequestBody RecommendationRequest request) {
         Post post = request.getPost();
-        postRepository.save(post);
         updateTagIndex(post);
         String postDomain = domain(post.getUrl());
         Map<Boolean, List<Link>> links = post.getTags()

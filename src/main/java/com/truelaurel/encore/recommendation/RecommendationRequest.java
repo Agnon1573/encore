@@ -1,5 +1,7 @@
 package com.truelaurel.encore.recommendation;
 
+import com.truelaurel.encore.post.Post;
+
 public class RecommendationRequest {
     private int internalLinkCount;
     private int externalLinkCount;
