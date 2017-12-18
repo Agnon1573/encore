@@ -31,7 +31,7 @@ public class RecommendationTest {
                 .uri("/posts")
                 .accept(MediaType.APPLICATION_JSON)
                 .body(Mono.just(post1), Post.class)
-                .exchange().expectBody(Post.class);
+                .exchange();
 
 
         Post post2 = new Post("https://hui-wang.info/post2.html", "read blog", "2017",

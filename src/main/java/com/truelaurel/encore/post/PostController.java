@@ -1,20 +1,25 @@
 package com.truelaurel.encore.post;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @RestController
 public class PostController {
 
-    private final PostRepository postRepository;
+    @Autowired
+    private PostRepository postRepository;
 
-    public PostController(PostRepository postRepository) {
-        this.postRepository = postRepository;
+    @Autowired
+    private ApplicationEventPublisher publisher;
+
+    public PostController() {
     }
 
     @PostMapping("/posts")
     public Mono<Post> createPost(@RequestBody Post post) {
-        return postRepository.save(post);
+        return postRepository.save(post).doOnNext(p -> publisher.publishEvent(new PostCreatedEvent(this, post)));
     }
 
     @GetMapping

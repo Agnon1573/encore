@@ -1,12 +1,9 @@
 package com.truelaurel.encore.post;
 
-import org.springframework.data.annotation.Id;
-
 import java.util.Objects;
 import java.util.Set;
 
 public class Post {
-    @Id
     private String url;
     private String title;
     private String timestamp;
