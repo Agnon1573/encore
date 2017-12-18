@@ -10,6 +10,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.truelaurel.encore.recommendation.DomainNameExtractor.*;
+
 @RestController
 public class RecommendationController {
 
@@ -38,15 +40,17 @@ public class RecommendationController {
         Post post = request.getPost();
         postRepository.save(post);
         updateTagIndex(post);
-        String postDomain = DomainNameExtractor.domain(post.getUrl());
+        String postDomain = domain(post.getUrl());
         Map<Boolean, List<Link>> links = post.getTags()
                 .stream()
                 .flatMap(tag -> tagToLinks.getOrDefault(tag, new HashSet<>()).stream())
-                .collect(Collectors.partitioningBy(link -> postDomain.equals(DomainNameExtractor.domain(link.getUrl()))));
+                .collect(Collectors.partitioningBy(link -> postDomain.equals(domain(link.getUrl()))));
         List<Link> internalLinks = links.get(true);
         List<Link> externalLinks = links.get(false);
         return Flux.fromStream(Stream.concat(
-                internalLinks.stream().limit(request.getInternalLinkCount()),
+                internalLinks.stream()
+                        .filter(link -> !domain(link.getUrl()).equals(domain(post.getUrl())))
+                        .limit(request.getInternalLinkCount()),
                 externalLinks.stream().limit(request.getExternalLinkCount())
         ));
     }
