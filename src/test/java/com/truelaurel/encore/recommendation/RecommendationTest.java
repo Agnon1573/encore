@@ -11,9 +11,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
+
+import static com.truelaurel.encore.data.PostData.POST1;
+import static com.truelaurel.encore.data.PostData.POST2;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -24,30 +25,28 @@ public class RecommendationTest {
 
     @Test
     public void testRecommendation() {
-        Post post1 = new Post("https://hui-wang.info/post1.html", "read books", "2017",
-                new HashSet<>(Arrays.asList("book", "read")));
+        webClient.post()
+                .uri("/posts")
+                .accept(MediaType.APPLICATION_JSON)
+                .body(Mono.just(POST1), Post.class)
+                .exchange();
+
 
         webClient.post()
                 .uri("/posts")
                 .accept(MediaType.APPLICATION_JSON)
-                .body(Mono.just(post1), Post.class)
+                .body(Mono.just(POST2), Post.class)
                 .exchange();
 
-
-        Post post2 = new Post("https://hui-wang.info/post2.html", "read blog", "2017",
-                new HashSet<>(Arrays.asList("blog", "read")));
-        webClient.post()
-                .uri("/posts")
-                .accept(MediaType.APPLICATION_JSON)
-                .body(Mono.just(post2), Post.class)
-                .exchange();
-
-
-        RecommendationRequest request = new RecommendationRequest(1, 1, post1);
-        webClient.post().uri("/recommend").accept(MediaType.APPLICATION_JSON)
-                .body(Mono.just(request), RecommendationRequest.class)
+        webClient.get().uri(
+                builder -> builder
+                        .path("/recommendation")
+                        .queryParam("url", POST1.getUrl())
+                        .queryParam("internal", 1)
+                        .queryParam("external", 1)
+                        .build())
                 .exchange()
-                .expectBodyList(Link.class).isEqualTo(Collections.singletonList(new Link(post2.getTitle(), post2.getUrl())));
+                .expectBodyList(Link.class).isEqualTo(Collections.singletonList(new Link(POST2.getTitle(), POST2.getUrl())));
     }
 
 }

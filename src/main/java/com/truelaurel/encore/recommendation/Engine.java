@@ -17,7 +17,7 @@ import static com.truelaurel.encore.recommendation.DomainNameExtractor.domain;
 @Component
 public class Engine implements ApplicationListener<PostCreatedEvent> {
     private final Map<String, Set<Link>> tagToLinks = new HashMap<>();
-
+    private final Map<String, Post> urlToPost = new HashMap<>();
 
     public Engine(PostRepository postRepository) {
         postRepository.findAll().subscribe(this::updateTagIndex);
@@ -26,7 +26,9 @@ public class Engine implements ApplicationListener<PostCreatedEvent> {
 
     @Override
     public void onApplicationEvent(PostCreatedEvent postCreatedEvent) {
-        updateTagIndex(postCreatedEvent.getPost());
+        Post post = postCreatedEvent.getPost();
+        urlToPost.put(post.getUrl(), post);
+        updateTagIndex(post);
     }
 
     private void updateTagIndex(Post p) {
@@ -39,8 +41,8 @@ public class Engine implements ApplicationListener<PostCreatedEvent> {
         );
     }
 
-    public Flux<Link> recommend(RecommendationRequest request) {
-        Post post = request.getPost();
+    public Flux<Link> recommend(String url, int internal, int external) {
+        Post post = urlToPost.get(url);
         String postDomain = domain(post.getUrl());
         Map<Boolean, List<Link>> links = post.getTags()
                 .stream()
@@ -52,8 +54,8 @@ public class Engine implements ApplicationListener<PostCreatedEvent> {
         return Flux.fromStream(Stream.concat(
                 internalLinks.stream()
                         .filter(link -> !link.getUrl().equals(post.getUrl()))
-                        .limit(request.getInternalLinkCount()),
-                externalLinks.stream().limit(request.getExternalLinkCount())
+                        .limit(internal),
+                externalLinks.stream().limit(external)
         ));
     }
 }
