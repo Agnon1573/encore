@@ -1,0 +1,63 @@
+version: '2'
+
+services:
+  mongodb:
+    image: mongo:3.3
+    volumes:
+      - /data/db:/data/db
+
+  mongo-express:
+    image: mongo-express
+    links:
+      - mongodb:mongo
+    environment:
+      ME_CONFIG_BASICAUTH_USERNAME: aDsPMRMrPnwL
+      ME_CONFIG_BASICAUTH_PASSWORD: 82Sv0lJTjEgbaC5iMM6jBHOpEAUkRgMSm4BFmNBzIhnY88hL0oC5i8wA8Ku0c  
+      VIRTUAL_HOST: db.truelaurel.com
+      LETSENCRYPT_HOST: db.truelaurel.com
+      LETSENCRYPT_EMAIL: hedonplay@gmail.com
+    depends_on:
+      - mongodb
+
+  encore:
+    image: registry.gitlab.com/truelaurel/encore:master
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb/encore
+      VIRTUAL_HOST: api.truelaurel.com
+      LETSENCRYPT_HOST: api.truelaurel.com
+      LETSENCRYPT_EMAIL: hedonplay@gmail.com
+    entrypoint:
+      - java
+      - -XX:NativeMemoryTracking=summary
+      - -Djava.security.egd=file:/dev/./urandom
+      - -Dspring.profiles.active=with-security,prod
+      - -jar
+      - app.jar
+    depends_on:
+      - mongodb
+
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/etc/nginx/conf.d"
+      - "/etc/nginx/vhost.d"
+      - "/usr/share/nginx/html"
+      - "/data/cert:/etc/nginx/certs:ro"
+      - "/var/run/docker.sock:/tmp/docker.sock:ro"
+    depends_on:
+      - mongo-express
+      - encore
+
+  letsencrypt-nginx-proxy-companion:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    volumes_from:
+      - nginx-proxy
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/data/cert:/etc/nginx/certs:rw"
+    depends_on:
+      - nginx-proxy
