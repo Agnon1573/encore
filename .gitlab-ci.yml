@@ -1,0 +1,28 @@
+stages:
+  - build
+  - publish_docker_image
+
+variables:
+  IMG_NAME : "registry.gitlab.com/truelaurel/encore"
+
+build-job:
+  stage: build
+  image: maven:3.3.9-jdk-8
+  script:
+    - mvn clean install
+  artifacts:
+    paths:
+     - target/
+
+publish_docker_image_job:
+  stage: publish_docker_image
+  image: docker:git
+  services:
+    - docker:dind
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - cp target/*.jar src/main/docker
+    - docker build -t $IMG_NAME:$CI_BUILD_REF_NAME src/main/docker
+    - docker push $IMG_NAME:$CI_BUILD_REF_NAME
+  only:
+    - master
