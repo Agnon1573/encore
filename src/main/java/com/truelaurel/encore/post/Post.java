@@ -6,16 +6,14 @@ import java.util.Set;
 public class Post {
     private String url;
     private String title;
-    private String timestamp;
     private Set<String> tags;
 
     public Post() {
     }
 
-    public Post(String url, String title, String timestamp, Set<String> tags) {
+    public Post(String url, String title, Set<String> tags) {
         this.url = url;
         this.title = title;
-        this.timestamp = timestamp;
         this.tags = tags;
     }
 
@@ -33,14 +31,6 @@ public class Post {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
     }
 
     public Set<String> getTags() {
