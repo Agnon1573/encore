@@ -1,5 +1,6 @@
 package com.truelaurel.encore.recommendation;
 
+import com.truelaurel.encore.common.FunctionalReadWriteLock;
 import com.truelaurel.encore.common.Link;
 import com.truelaurel.encore.post.Post;
 import com.truelaurel.encore.post.PostCreatedEvent;
@@ -17,21 +18,28 @@ import static com.truelaurel.encore.recommendation.DomainNameExtractor.domain;
 @Component
 public class Engine implements ApplicationListener<PostCreatedEvent> {
     private final Map<String, Set<Link>> tagToLinks = new HashMap<>();
-    private final Map<String, Post> urlToPost = new HashMap<>();
+    private final Map<String, Post> permalinkToPost = new HashMap<>();
+    private FunctionalReadWriteLock lock = new FunctionalReadWriteLock();
 
     public Engine(PostRepository postRepository) {
-        postRepository.findAll().subscribe(this::updateTagIndex);
+        initFromRepo(postRepository);
     }
 
+    void initFromRepo(PostRepository postRepository) {
+        postRepository.findAll().subscribe(this::update);
+    }
 
     @Override
     public void onApplicationEvent(PostCreatedEvent postCreatedEvent) {
-        Post post = postCreatedEvent.getPost();
-        urlToPost.put(post.getPermalink(), post);
-        updateTagIndex(post);
+        doUpdate(postCreatedEvent.getPost());
     }
 
-    private void updateTagIndex(Post p) {
+    void update(Post p) {
+        lock.write(() -> doUpdate(p));
+    }
+
+    private void doUpdate(Post p) {
+        permalinkToPost.put(p.getPermalink(), p);
         p.getTags().forEach(
                 tag -> {
                     Set<Link> links = tagToLinks.getOrDefault(tag, new HashSet<>());
@@ -41,8 +49,12 @@ public class Engine implements ApplicationListener<PostCreatedEvent> {
         );
     }
 
-    public Flux<Link> recommend(String url, int internal, int external) {
-        Post post = urlToPost.get(url);
+    public Flux<Link> recommend(String permalink, int internal, int external) {
+        return lock.read(() -> doRecommend(permalink, internal, external));
+    }
+
+    private Flux<Link> doRecommend(String permalink, int internal, int external) {
+        Post post = permalinkToPost.get(permalink);
         String postDomain = domain(post.getPermalink());
         Map<Boolean, List<Link>> links = post.getTags()
                 .stream()
