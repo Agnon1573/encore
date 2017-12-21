@@ -17,10 +17,10 @@ public class RecommendationController {
 
     @GetMapping("/recommendation")
     public Flux<Link> recommend(
-            @RequestParam String url,
+            @RequestParam String permalink,
             @RequestParam int internal,
             @RequestParam int external) {
-        return engine.recommend(url, internal, external);
+        return engine.recommend(permalink, internal, external);
     }
 
 

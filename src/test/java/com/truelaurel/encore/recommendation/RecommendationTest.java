@@ -41,12 +41,12 @@ public class RecommendationTest {
         webClient.get().uri(
                 builder -> builder
                         .path("/recommendation")
-                        .queryParam("url", POST1.getUrl())
+                        .queryParam("permalink", POST1.getPermalink())
                         .queryParam("internal", 1)
                         .queryParam("external", 1)
                         .build())
                 .exchange()
-                .expectBodyList(Link.class).isEqualTo(Collections.singletonList(new Link(POST2.getTitle(), POST2.getUrl())));
+                .expectBodyList(Link.class).isEqualTo(Collections.singletonList(new Link(POST2.getTitle(), POST2.getPermalink())));
     }
 
 }

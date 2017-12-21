@@ -27,7 +27,7 @@ public class Engine implements ApplicationListener<PostCreatedEvent> {
     @Override
     public void onApplicationEvent(PostCreatedEvent postCreatedEvent) {
         Post post = postCreatedEvent.getPost();
-        urlToPost.put(post.getUrl(), post);
+        urlToPost.put(post.getPermalink(), post);
         updateTagIndex(post);
     }
 
@@ -35,7 +35,7 @@ public class Engine implements ApplicationListener<PostCreatedEvent> {
         p.getTags().forEach(
                 tag -> {
                     Set<Link> links = tagToLinks.getOrDefault(tag, new HashSet<>());
-                    links.add(new Link(p.getTitle(), p.getUrl()));
+                    links.add(new Link(p.getTitle(), p.getPermalink()));
                     tagToLinks.put(tag, links);
                 }
         );
@@ -43,17 +43,17 @@ public class Engine implements ApplicationListener<PostCreatedEvent> {
 
     public Flux<Link> recommend(String url, int internal, int external) {
         Post post = urlToPost.get(url);
-        String postDomain = domain(post.getUrl());
+        String postDomain = domain(post.getPermalink());
         Map<Boolean, List<Link>> links = post.getTags()
                 .stream()
                 .flatMap(tag -> tagToLinks.getOrDefault(tag, new HashSet<>()).stream())
                 .distinct()
-                .collect(Collectors.partitioningBy(link -> postDomain.equals(domain(link.getUrl()))));
+                .collect(Collectors.partitioningBy(link -> postDomain.equals(domain(link.getPermalink()))));
         List<Link> internalLinks = links.get(true);
         List<Link> externalLinks = links.get(false);
         return Flux.fromStream(Stream.concat(
                 internalLinks.stream()
-                        .filter(link -> !link.getUrl().equals(post.getUrl()))
+                        .filter(link -> !link.getPermalink().equals(post.getPermalink()))
                         .limit(internal),
                 externalLinks.stream().limit(external)
         ));
