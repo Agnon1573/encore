@@ -30,7 +30,6 @@ services:
       - java
       - -XX:NativeMemoryTracking=summary
       - -Djava.security.egd=file:/dev/./urandom
-      - -Dspring.profiles.active=with-security,prod
       - -jar
       - app.jar
     depends_on:
