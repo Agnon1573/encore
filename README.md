@@ -1,1 +1,1 @@
-# Encore - Post Recommendation Service
+# 安可（Encore） - 独立博主们的文章推荐服务
