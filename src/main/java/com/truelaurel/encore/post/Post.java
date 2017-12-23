@@ -1,9 +1,13 @@
 package com.truelaurel.encore.post;
 
+import org.springframework.data.annotation.Id;
+
 import java.util.Objects;
 import java.util.Set;
 
 public class Post {
+
+    @Id
     private String permalink;
     private String title;
     private Set<String> tags;
