@@ -6,19 +6,6 @@ services:
     volumes:
       - /data/db:/data/db
 
-  mongo-express:
-    image: mongo-express
-    links:
-      - mongodb:mongo
-    environment:
-      ME_CONFIG_BASICAUTH_USERNAME: aDsPMRMrPnwL
-      ME_CONFIG_BASICAUTH_PASSWORD: 82Sv0lJTjEgbaC5iMM6jBHOpEAUkRgMSm4BFmNBzIhnY88hL0oC5i8wA8Ku0c  
-      VIRTUAL_HOST: db.truelaurel.com
-      LETSENCRYPT_HOST: db.truelaurel.com
-      LETSENCRYPT_EMAIL: hedonplay@gmail.com
-    depends_on:
-      - mongodb
-
   encore:
     image: registry.gitlab.com/truelaurel/encore:master
     environment:
@@ -48,7 +35,6 @@ services:
       - "/data/cert:/etc/nginx/certs:ro"
       - "/var/run/docker.sock:/tmp/docker.sock:ro"
     depends_on:
-      - mongo-express
       - encore
 
   letsencrypt-nginx-proxy-companion:
