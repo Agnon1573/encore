@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 start() {
-    docker pull registry.gitlab.com/truelaurel/encore:master
+    docker pull huiwang/encore:latest
     docker-compose -p encore -f docker-compose.yml up -d
 }
 
