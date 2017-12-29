@@ -60,7 +60,7 @@
 
     <profiles>
         <profile>
-            <id>run-with-embedded-mongo</id>
+            <id>with-embedded-mongo</id>
             <dependencies>
                 <dependency>
                     <groupId>de.flapdoodle.embed</groupId>
