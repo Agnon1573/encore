@@ -7,7 +7,7 @@ services:
       - /data/db:/data/db
 
   encore:
-    image: registry.gitlab.com/truelaurel/encore:master
+    image: huiwang/encore:latest
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://mongodb/encore
       VIRTUAL_HOST: api.truelaurel.com
