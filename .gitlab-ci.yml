@@ -21,9 +21,9 @@ publish_docker_image_job:
   services:
     - docker:dind
   script:
-    - docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD https://index.docker.io/v1
+    - docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD
     - cp target/*.jar src/main/docker
     - docker build -t $IMG_NAME:$IMG_TAG src/main/docker
-    - docker push $IMG_NAME
+    - docker push $IMG_NAME:$IMG_TAG
   only:
     - master
