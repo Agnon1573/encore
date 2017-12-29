@@ -1,4 +1,4 @@
-> [Live preview](https://hui-wang.info)
+**[Live preview](https://hui-wang.info)**
 
 # Encore: Posts Recommendation Engine for Bloggers
 Encore helps bloggers to promote their blogs by recommended posts with both internal and external links.
