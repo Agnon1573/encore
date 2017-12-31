@@ -4,6 +4,8 @@
 Encore helps bloggers to promote their blogs by recommended posts with both internal and external links.
 An internal link points to a post inside the same blog and an external one targets post of other bloggers.
 
+![Alt text](./encore.svg)
+
 By sharing links through recommended posts, we believe that we can
 - create high-quality connections between bloggers
 - help readers to discover more interesting posts
